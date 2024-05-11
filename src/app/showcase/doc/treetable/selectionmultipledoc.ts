@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TreeNode } from 'primeng/api';
-import { Code } from '../../domain/code';
-import { NodeService } from '../../service/nodeservice';
+import { Code } from '@domain/code';
+import { NodeService } from '@service/nodeservice';
 
 interface Column {
     field: string;
@@ -14,13 +14,12 @@ interface Column {
         <app-docsectiontext>
             <p>
                 More than one node is selectable by setting <i>selectionMode</i> to <i>multiple</i>. By default in multiple selection mode, metaKey press (e.g. <i>⌘</i>) is necessary to add to existing selections however this can be configured with
-                disabling the <i>metaKeySelection</i> property. Note that in touch enabled devices, TreeTable always ignores metaKey. In multiple selection mode, value binding should be a key-value pair where key is the node key and value is a
-                boolean to indicate selection.
+                disabling the <i>metaKeySelection</i> property. Note that in touch enabled devices, TreeTable always ignores metaKey.
             </p>
         </app-docsectiontext>
         <div class="card">
             <div class="flex gap-3 align-items-center justify-content-center mb-4">
-                <p-inputSwitch [(ngModel)]="metaKeySelection"></p-inputSwitch>
+                <p-inputSwitch [(ngModel)]="metaKeySelection" />
                 <span>Metakey</span>
             </div>
             <p-deferred-demo (load)="loadDemoData()">
@@ -35,7 +34,7 @@ interface Column {
                     <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
                         <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
                             <td *ngFor="let col of columns; let i = index">
-                                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0"></p-treeTableToggler>
+                                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0" />
                                 {{ rowData[col.field] }}
                             </td>
                         </tr>
@@ -69,32 +68,16 @@ export class SelectionMultipleDoc {
     }
 
     code: Code = {
-        basic: `<p-inputSwitch [(ngModel)]="metaKeySelection"></p-inputSwitch>
-<p-treeTable [value]="files" [columns]="cols" selectionMode="multiple" [(selection)]="selectedNodes" dataKey="name" [metaKeySelection]="metaKeySelection" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}">
-    <ng-template pTemplate="header" let-columns>
-        <tr>
-            <th *ngFor="let col of columns">
-                {{ col.header }}
-            </th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-        <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
-            <td *ngFor="let col of columns; let i = index">
-                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0"></p-treeTableToggler>
-                {{ rowData[col.field] }}
-            </td>
-        </tr>
-    </ng-template>
-</p-treeTable>`,
-
-        html: `
-<div class="card">
-    <div class="flex gap-3 align-items-center justify-content-center mb-4">
-        <p-inputSwitch [(ngModel)]="metaKeySelection"></p-inputSwitch>
-        <span>Metakey</span>
-    </div>
-    <p-treeTable [value]="files" [columns]="cols" selectionMode="multiple" [(selection)]="selectedNodes" dataKey="name" [metaKeySelection]="metaKeySelection" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}">
+        basic: `<p-inputSwitch [(ngModel)]="metaKeySelection" />
+<p-treeTable 
+    [value]="files" 
+    [columns]="cols" 
+    selectionMode="multiple" 
+    [(selection)]="selectedNodes" 
+    dataKey="name" 
+    [metaKeySelection]="metaKeySelection" 
+    [scrollable]="true" 
+    [tableStyle]="{'min-width':'50rem'}">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns">
@@ -105,18 +88,52 @@ export class SelectionMultipleDoc {
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
             <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
                 <td *ngFor="let col of columns; let i = index">
-                    <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0"></p-treeTableToggler>
+                    <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0" />
                     {{ rowData[col.field] }}
                 </td>
             </tr>
         </ng-template>
+</p-treeTable>`,
+
+        html: `<div class="card">
+    <div class="flex gap-3 align-items-center justify-content-center mb-4">
+        <p-inputSwitch [(ngModel)]="metaKeySelection" />
+        <span>Metakey</span>
+    </div>
+    <p-treeTable 
+        [value]="files" 
+        [columns]="cols" 
+        selectionMode="multiple" 
+        [(selection)]="selectedNodes" 
+        dataKey="name" 
+        [metaKeySelection]="metaKeySelection" 
+        [scrollable]="true" 
+        [tableStyle]="{'min-width':'50rem'}">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns">
+                        {{ col.header }}
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+                <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+                    <td *ngFor="let col of columns; let i = index">
+                        <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0" />
+                        {{ rowData[col.field] }}
+                    </td>
+                </tr>
+            </ng-template>
     </p-treeTable>
 </div>`,
 
-        typescript: `
-import { Component, OnInit } from '@angular/core';
+        typescript: `import { Component, OnInit } from '@angular/core';
 import { TreeNode } from 'primeng/api';
-import { NodeService } from '../../service/nodeservice';
+import { NodeService } from '@service/nodeservice';
+import { TreeTableModule } from 'primeng/treetable';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 interface Column {
     field: string;
@@ -125,7 +142,10 @@ interface Column {
 
 @Component({
     selector: 'tree-table-selection-multiple-demo',
-    templateUrl: './tree-table-selection-multiple-demo.html'
+    templateUrl: './tree-table-selection-multiple-demo.html',
+    standalone: true,
+    imports: [TreeTableModule, InputSwitchModule, FormsModule, CommonModule],
+    providers: [NodeService]
 })
 export class TreeTableSelectionMultipleDemo implements OnInit {
     metaKeySelection: boolean = true;

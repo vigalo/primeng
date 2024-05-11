@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, Inject, Input, NgModule, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, NgModule, PLATFORM_ID, ViewChild, booleanAttribute } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { Code, ExtFile, RouteFile } from 'src/app/showcase/domain/code';
@@ -92,11 +92,11 @@ export class AppCodeComponent {
 
     @Input() routeFiles: RouteFile[] = [];
 
-    @Input() hideToggleCode: boolean = false;
+    @Input({ transform: booleanAttribute }) hideToggleCode: boolean = false;
 
-    @Input() hideCodeSandbox: boolean = false;
+    @Input({ transform: booleanAttribute }) hideCodeSandbox: boolean = false;
 
-    @Input() hideStackBlitz: boolean = false;
+    @Input({ transform: booleanAttribute }) hideStackBlitz: boolean = false;
 
     @ViewChild('codeElement') codeElement: ElementRef;
 
@@ -152,7 +152,28 @@ export class AppCodeComponent {
 
     openStackBlitz() {
         if (this.code) {
-            useStackBlitz({ code: this.code, selector: this.selector, extFiles: this.extFiles, routeFiles: this.routeFiles });
+            let str = this.code.typescript;
+
+            const importModuleStatement = "import { ImportsModule } from './imports';";
+
+            if (!str.includes(importModuleStatement)) {
+                let modifiedCodeWithImportsModule = str.replace(/import\s+{[^{}]*}\s+from\s+'[^']+';[\r\n]*/g, (match) => {
+                    if (match.includes('Module') && !match.includes('ReactiveFormsModule')) {
+                        return '';
+                    }
+                    return match;
+                });
+
+                modifiedCodeWithImportsModule = modifiedCodeWithImportsModule.replace(/\bimports:\s*\[[^\]]*\]/, 'imports: [ImportsModule]');
+
+                const finalModifiedCode = modifiedCodeWithImportsModule.replace(/import\s+\{[^{}]*\}\s+from\s+'@angular\/core';/, (match) => match + '\n' + importModuleStatement);
+
+                str = finalModifiedCode;
+            }
+
+            const stackBlitzObject = { ...this.code, typescript: str };
+
+            useStackBlitz({ code: stackBlitzObject, selector: this.selector, extFiles: this.extFiles, routeFiles: this.routeFiles });
         }
     }
 

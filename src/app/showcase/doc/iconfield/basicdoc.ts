@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Code } from '../../domain/code';
+import { Code } from '@domain/code';
 
 @Component({
     selector: 'basic-doc',
@@ -33,23 +33,30 @@ export class BasicDoc {
     <p-inputIcon styleClass="pi pi-spinner pi-spin" />
     <input type="text" pInputText />
 </p-iconField>`,
+
         html: `<div class="card flex flex-wrap justify-content-center gap-3">
     <p-iconField iconPosition="left">
-    <p-inputIcon styleClass="pi pi-search" />
-    <input type="text" pInputText placeholder="Search" />
-</p-iconField>
-<p-iconField iconPosition="right">
-    <p-inputIcon styleClass="pi pi-spinner pi-spin" />
-    <input type="text" pInputText />
-</p-iconField>
+        <p-inputIcon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Search" />
+    </p-iconField>
+    <p-iconField iconPosition="right">
+        <p-inputIcon styleClass="pi pi-spinner pi-spin" />
+        <input type="text" pInputText />
+    </p-iconField>
 </div>`,
-        typescript: `
-import { Component } from '@angular/core';
+
+        typescript: `import { Component } from '@angular/core';
+import { InputIconModule } from 'primeng/inputicon';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'iconField-basic-demo',
-    templateUrl: './iconField-basic-demo.html'
+    selector: 'iconfield-basic-demo',
+    templateUrl: './iconfield-basic-demo.html',
+    standalone: true,
+    imports: [InputIconModule, IconFieldModule, InputTextModule, FormsModule]
 })
-export class IconFieldBasicDemo {}`
+export class IconfieldBasicDemo {}`
     };
 }

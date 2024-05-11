@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Code } from '../../domain/code';
+import { Code } from '@domain/code';
 
 @Component({
     selector: 'accessibility-doc',
@@ -133,7 +133,6 @@ export class AccessibilityDoc {
     code: Code = {
         basic: `<p-splitButton 
     [buttonProps]="{'aria-label': 'Default Action'}" 
-    [menuButtonProps]="{'aria-label': 'More Options'}"
-></p-splitButton>`
+    [menuButtonProps]="{'aria-label': 'More Options'}" />`
     };
 }

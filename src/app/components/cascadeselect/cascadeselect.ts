@@ -2,6 +2,7 @@ import { AnimationEvent } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import {
     AfterContentInit,
+    booleanAttribute,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -14,10 +15,12 @@ import {
     Inject,
     Input,
     NgModule,
+    numberAttribute,
     OnInit,
     Output,
     QueryList,
     signal,
+    SimpleChanges,
     TemplateRef,
     ViewChild,
     ViewEncapsulation
@@ -26,6 +29,8 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { OverlayOptions, OverlayService, PrimeNGConfig, PrimeTemplate, SharedModule, TranslationKeys } from 'primeng/api';
 import { DomHandler } from 'primeng/dom';
 import { AngleRightIcon } from 'primeng/icons/angleright';
+import { AutoFocusModule } from 'primeng/autofocus';
+
 import { ChevronDownIcon } from 'primeng/icons/chevrondown';
 import { TimesIcon } from 'primeng/icons/times';
 import { Overlay, OverlayModule } from 'primeng/overlay';
@@ -119,7 +124,7 @@ export class CascadeSelectSub implements OnInit {
 
     @Input() groupIconTemplate: Nullable<TemplateRef<any>>;
 
-    @Input() level: number = 0;
+    @Input({ transform: numberAttribute }) level: number = 0;
 
     @Input() optionLabel: string | undefined;
 
@@ -127,9 +132,9 @@ export class CascadeSelectSub implements OnInit {
 
     @Input() optionGroupLabel: string | undefined;
 
-    @Input() dirty: boolean | undefined;
+    @Input({ transform: booleanAttribute }) dirty: boolean | undefined;
 
-    @Input() root: boolean | undefined;
+    @Input({ transform: booleanAttribute }) root: boolean | undefined;
 
     @Output() onChange: EventEmitter<any> = new EventEmitter();
 
@@ -249,6 +254,8 @@ export class CascadeSelectSub implements OnInit {
                 (focus)="onInputFocus($event)"
                 (blur)="onInputBlur($event)"
                 (keydown)="onInputKeyDown($event)"
+                pAutoFocus
+                [autofocus]="autofocus"
             />
         </div>
         <span [ngClass]="labelClass" [attr.data-pc-section]="'label'">
@@ -268,10 +275,21 @@ export class CascadeSelectSub implements OnInit {
         </ng-container>
 
         <div class="p-cascadeselect-trigger" role="button" aria-haspopup="listbox" [attr.aria-expanded]="overlayVisible ?? false" [attr.data-pc-section]="'dropdownIcon'" [attr.aria-hidden]="true">
-            <ChevronDownIcon *ngIf="!triggerIconTemplate" [styleClass]="'p-cascadeselect-trigger-icon'" />
-            <span *ngIf="triggerIconTemplate" class="p-cascadeselect-trigger-icon">
-                <ng-template *ngTemplateOutlet="triggerIconTemplate"></ng-template>
-            </span>
+            <ng-container *ngIf="loading; else elseBlock">
+                <ng-container *ngIf="loadingIconTemplate">
+                    <ng-container *ngTemplateOutlet="loadingIconTemplate"></ng-container>
+                </ng-container>
+                <ng-container *ngIf="!loadingIconTemplate">
+                    <span *ngIf="loadingIcon" [ngClass]="'p-cascadeselect-trigger-icon pi-spin ' + loadingIcon" aria-hidden="true"></span>
+                    <span *ngIf="!loadingIcon" [class]="'p-cascadeselect-trigger-icon pi pi-spinner pi-spin'" aria-hidden="true"></span>
+                </ng-container>
+            </ng-container>
+            <ng-template #elseBlock>
+                <ChevronDownIcon *ngIf="!triggerIconTemplate" [styleClass]="'p-cascadeselect-trigger-icon'" />
+                <span *ngIf="triggerIconTemplate" class="p-cascadeselect-trigger-icon">
+                    <ng-template *ngTemplateOutlet="triggerIconTemplate"></ng-template>
+                </span>
+            </ng-template>
         </div>
         <span role="status" aria-live="polite" class="p-hidden-accessible">
             {{ searchResultMessageText }}
@@ -294,8 +312,7 @@ export class CascadeSelectSub implements OnInit {
                 <div #panel class="p-cascadeselect-panel p-component" [class]="panelStyleClass" [ngStyle]="panelStyle" [attr.data-pc-section]="'panel'">
                     <div class="p-cascadeselect-items-wrapper" [attr.data-pc-section]="'wrapper'">
                         <p-cascadeSelectSub
-                            class="p-cascadeselect-items"
-                            [options]="processedOptions()"
+                            [options]="processedOptions"
                             [selectId]="id"
                             [focusedOptionId]="focused ? focusedOptionId : undefined"
                             [activeOptionPath]="activeOptionPath()"
@@ -344,7 +361,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
      * Determines if the option will be selected on focus.
      * @group Props
      */
-    @Input() selectOnFocus: boolean = false;
+    @Input({ transform: booleanAttribute }) selectOnFocus: boolean = false;
     /**
      * Text to display when the search is active. Defaults to global value in i18n translation configuration.
      * @group Props
@@ -388,7 +405,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
      * Whether to focus on the first visible or selected element when the overlay panel is shown.
      * @group Props
      */
-    @Input() autoOptionFocus: boolean = true;
+    @Input({ transform: booleanAttribute }) autoOptionFocus: boolean = true;
     /**
      * Style class of the component.
      * @group Props
@@ -448,7 +465,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
      * Index of the element in tabbing order.
      * @group Props
      */
-    @Input() tabindex: number | undefined = 0;
+    @Input({ transform: numberAttribute }) tabindex: number | undefined = 0;
     /**
      * Establishes relationships between the component and label(s) where its value should be one or more element IDs.
      * @group Props
@@ -473,12 +490,12 @@ export class CascadeSelect implements OnInit, AfterContentInit {
      * When present, it specifies that the component should be disabled.
      * @group Props
      */
-    @Input() disabled: boolean | undefined;
+    @Input({ transform: booleanAttribute }) disabled: boolean | undefined;
     /**
      * When enabled, a clear icon is displayed to clear the value.
      * @group Props
      */
-    @Input() showClear: boolean = false;
+    @Input({ transform: booleanAttribute }) showClear: boolean = false;
     /**
      * Style class of the overlay panel.
      * @group Props
@@ -495,6 +512,11 @@ export class CascadeSelect implements OnInit, AfterContentInit {
      */
     @Input() overlayOptions: OverlayOptions | undefined;
     /**
+     * When present, it specifies that the component should automatically get focus on load.
+     * @group Props
+     */
+    @Input({ transform: booleanAttribute }) autofocus: boolean | undefined;
+    /**
      * Transition options of the show animation.
      * @group Props
      * @deprecated deprecated since v14.2.0, use overlayOptions property instead.
@@ -506,6 +528,21 @@ export class CascadeSelect implements OnInit, AfterContentInit {
         this._showTransitionOptions = val;
         console.warn('The showTransitionOptions property is deprecated since v14.2.0, use overlayOptions property instead.');
     }
+    /**
+     * Specifies the input variant of the component.
+     * @group Props
+     */
+    @Input() variant: 'filled' | 'outlined' = 'outlined';
+    /**
+     * Whether the dropdown is in loading state.
+     * @group Props
+     */
+    @Input({ transform: booleanAttribute }) loading: boolean | undefined = false;
+    /**
+     * Icon to display in loading state.
+     * @group Props
+     */
+    @Input() loadingIcon: string | undefined;
     /**
      * Transition options of the hide animation.
      * @group Props
@@ -604,6 +641,8 @@ export class CascadeSelect implements OnInit, AfterContentInit {
 
     triggerIconTemplate: Nullable<TemplateRef<any>>;
 
+    loadingIconTemplate: Nullable<TemplateRef<any>>;
+
     groupIconTemplate: Nullable<TemplateRef<any>>;
 
     clearIconTemplate: Nullable<TemplateRef<any>>;
@@ -618,12 +657,15 @@ export class CascadeSelect implements OnInit, AfterContentInit {
 
     modelValue = signal<any>(null);
 
+    processedOptions: string[] | string | undefined = [];
+
     get containerClass() {
         return {
             'p-cascadeselect p-component p-inputwrapper': true,
             'p-disabled': this.disabled,
             'p-focus': this.focused,
             'p-inputwrapper-filled': this.modelValue(),
+            'p-variant-filled': this.variant === 'filled' || this.config.inputStyle() === 'filled',
             'p-inputwrapper-focus': this.focused || this.overlayVisible,
             'p-overlay-open': this.overlayVisible
         };
@@ -632,7 +674,6 @@ export class CascadeSelect implements OnInit, AfterContentInit {
     get labelClass() {
         return {
             'p-cascadeselect-label': true,
-            'p-inputtext': true,
             'p-placeholder': this.label() === this.placeholder,
             'p-cascadeselect-label-empty': !this.value && (this.label() === 'p-emptylabel' || this.label().length === 0)
         };
@@ -679,11 +720,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
     visibleOptions = computed(() => {
         const processedOption = this.activeOptionPath().find((p) => p.key === this.focusedOptionInfo().parentKey);
 
-        return processedOption ? processedOption.children : this.processedOptions();
-    });
-
-    processedOptions = computed(() => {
-        return this.createProcessedOptions(this.options || []);
+        return processedOption ? processedOption.children : this.processedOptions;
     });
 
     label = computed(() => {
@@ -708,6 +745,13 @@ export class CascadeSelect implements OnInit, AfterContentInit {
             return processedOption ? this.getOptionLabel(processedOption.option) : label;
         }
         return label;
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.options) {
+            this.processedOptions = this.createProcessedOptions(changes.options.currentValue || []);
+            this.updateModel(null);
+        }
     }
 
     hasSelectedOption() {
@@ -755,7 +799,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
     }
 
     onInputKeyDown(event: KeyboardEvent) {
-        if (this.disabled) {
+        if (this.disabled || this.loading) {
             event.preventDefault();
 
             return;
@@ -793,6 +837,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
                 break;
 
             case 'Enter':
+            case 'NumpadEnter':
                 this.onEnterKey(event);
                 break;
 
@@ -1037,7 +1082,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
     }
 
     onContainerClick(event: MouseEvent) {
-        if (this.disabled) {
+        if (this.disabled || this.loading) {
             return;
         }
 
@@ -1073,7 +1118,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
     }
 
     findOptionPathByValue(value, processedOptions?, level = 0) {
-        processedOptions = processedOptions || (level === 0 && this.processedOptions());
+        processedOptions = processedOptions || (level === 0 && this.processedOptions);
 
         if (!processedOptions) return null;
         if (ObjectUtils.isEmpty(value)) return [];
@@ -1287,6 +1332,10 @@ export class CascadeSelect implements OnInit, AfterContentInit {
                     this.triggerIconTemplate = item.template;
                     break;
 
+                case 'loadingicon':
+                    this.loadingIconTemplate = item.template;
+                    break;
+
                 case 'clearicon':
                     this.clearIconTemplate = item.template;
                     break;
@@ -1327,7 +1376,7 @@ export class CascadeSelect implements OnInit, AfterContentInit {
 }
 
 @NgModule({
-    imports: [CommonModule, OverlayModule, SharedModule, RippleModule, ChevronDownIcon, AngleRightIcon, TimesIcon],
+    imports: [CommonModule, OverlayModule, SharedModule, RippleModule, AutoFocusModule, ChevronDownIcon, AngleRightIcon, TimesIcon],
     exports: [CascadeSelect, OverlayModule, CascadeSelectSub, SharedModule],
     declarations: [CascadeSelect, CascadeSelectSub]
 })

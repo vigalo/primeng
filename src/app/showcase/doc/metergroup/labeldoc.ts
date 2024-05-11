@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Code } from '../../domain/code';
+import { Code } from '@domain/code';
 
 @Component({
     selector: 'label-doc',
@@ -11,9 +11,9 @@ import { Code } from '../../domain/code';
             </p>
         </app-docsectiontext>
         <div class="card">
-            <p-meterGroup [value]="value" labelPosition="start" labelOrientation="vertical"></p-meterGroup>
+            <p-meterGroup [value]="value" labelPosition="start" labelOrientation="vertical" />
         </div>
-        <app-code [code]="code" selector="metergroup-label-demo"></app-code>
+        <app-code [code]="code" selector="meter-group-label-demo"></app-code>
     `
 })
 export class LabelDoc {
@@ -24,18 +24,26 @@ export class LabelDoc {
         { label: 'System', color: '#c084fc', value: 10 }
     ];
     code: Code = {
-        basic: `<p-meterGroup [value]="value" labelPosition="start" labelOrientation="vertical"></p-meterGroup>`,
+        basic: `<p-meterGroup 
+    [value]="value" 
+    labelPosition="start" 
+    labelOrientation="vertical" />`,
 
         html: `<div class="card">
-<p-meterGroup [value]="value" labelPosition="start" labelOrientation="vertical"></p-meterGroup>
+    <p-meterGroup 
+        [value]="value" 
+        labelPosition="start" 
+        labelOrientation="vertical" />
 </div>`,
 
-        typescript: `
-import { Component } from '@angular/core';
+        typescript: `import { Component } from '@angular/core';
+import { MeterGroupModule } from 'primeng/metergroup';
 
 @Component({
     selector: 'meter-group-label-demo',
-    templateUrl: './meter-group-label-demo.html'
+    templateUrl: './meter-group-label-demo.html',
+    standalone: true,
+    imports: [MeterGroupModule]
 })
 export class MeterGroupLabelDemo {
     value = [

@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TerminalService } from 'primeng/terminal';
 import { Subscription } from 'rxjs';
-import { Code } from '../../domain/code';
-import { NodeService } from '../../service/nodeservice';
-import { PhotoService } from '../../service/photoservice';
+import { Code } from '@domain/code';
+import { NodeService } from '@service/nodeservice';
+import { PhotoService } from '@service/photoservice';
 
 @Component({
     selector: 'dock-advanced-demo',
@@ -18,15 +18,15 @@ import { PhotoService } from '../../service/photoservice';
         <div class="card">
             <p-menubar [model]="menubarItems">
                 <ng-template pTemplate="start">
-                    <i class="pi pi-apple"></i>
+                    <i class="pi pi-apple px-2"></i>
                 </ng-template>
                 <ng-template pTemplate="end">
-                    <i class="pi pi-video"></i>
-                    <i class="pi pi-wifi"></i>
-                    <i class="pi pi-volume-up"></i>
+                    <i class="pi pi-video px-2"></i>
+                    <i class="pi pi-wifi px-2"></i>
+                    <i class="pi pi-volume-up px-2"></i>
                     <span>Fri 13:07</span>
-                    <i class="pi pi-search"></i>
-                    <i class="pi pi-bars"></i>
+                    <i class="pi pi-search px-2"></i>
+                    <i class="pi pi-bars px-2"></i>
                 </ng-template>
             </p-menubar>
             <div class="dock-window dock-advanced">
@@ -36,14 +36,14 @@ import { PhotoService } from '../../service/photoservice';
                     </ng-template>
                 </p-dock>
 
-                <p-toast></p-toast>
+                <p-toast position="top-center" key="tc" />
 
                 <p-dialog [(visible)]="displayFinder" [breakpoints]="{ '960px': '50vw' }" [style]="{ width: '30vw', height: '18rem' }" [draggable]="false" [resizable]="false">
-                    <p-tree [value]="nodes"></p-tree>
+                    <p-tree [value]="nodes" />
                 </p-dialog>
 
                 <p-dialog [maximizable]="true" [(visible)]="displayTerminal" [breakpoints]="{ '960px': '50vw' }" [style]="{ width: '30vw' }" [draggable]="false" [resizable]="false">
-                    <p-terminal welcomeMessage="Welcome to PrimeNG (cmd: 'date', 'greet {0}', 'random')" prompt="primeng $"></p-terminal>
+                    <p-terminal welcomeMessage="Welcome to PrimeNG (cmd: 'date', 'greet {0}', 'random')" prompt="primeng $" />
                 </p-dialog>
 
                 <p-galleria
@@ -59,7 +59,7 @@ import { PhotoService } from '../../service/photoservice';
                     [fullScreen]="true"
                 >
                     <ng-template pTemplate="item" let-item>
-                        <img [src]="item.previewImageSrc" style="width: 100%; display: block;" />
+                        <img [src]="item.itemImageSrc" style="width: 100%; display: block;" />
                     </ng-template>
                 </p-galleria>
             </div>
@@ -130,7 +130,7 @@ export class AdvancedDoc implements OnInit, OnDestroy {
                 },
                 icon: 'https://primefaces.org/cdn/primeng/images/dock/appstore.svg',
                 command: () => {
-                    this.messageService.add({ severity: 'error', summary: 'An unexpected error occurred while signing in.', detail: 'UNTRUSTED_CERT_TITLE' });
+                    this.messageService.add({ severity: 'error', summary: 'An unexpected error occurred while signing in.', detail: 'UNTRUSTED_CERT_TITLE', key: 'tc' });
                 }
             },
             {
@@ -144,7 +144,7 @@ export class AdvancedDoc implements OnInit, OnDestroy {
                 },
                 icon: 'https://primefaces.org/cdn/primeng/images/dock/safari.svg',
                 command: () => {
-                    this.messageService.add({ severity: 'warn', summary: 'Safari has stopped working' });
+                    this.messageService.add({ severity: 'warn', summary: 'Safari has stopped working', key: 'tc' });
                 }
             },
             {
@@ -183,7 +183,7 @@ export class AdvancedDoc implements OnInit, OnDestroy {
                 },
                 icon: 'https://primefaces.org/cdn/primeng/images/dock/trash.png',
                 command: () => {
-                    this.messageService.add({ severity: 'info', summary: 'Empty Trash' });
+                    this.messageService.add({ severity: 'info', summary: 'Empty Trash', key: 'tc' });
                 }
             }
         ];
@@ -369,15 +369,15 @@ export class AdvancedDoc implements OnInit, OnDestroy {
     code: Code = {
         basic: `<p-menubar [model]="menubarItems">
     <ng-template pTemplate="start">
-        <i class="pi pi-apple"></i>
+        <i class="pi pi-apple px-2"></i>
     </ng-template>
     <ng-template pTemplate="end">
-        <i class="pi pi-video"></i>
-        <i class="pi pi-wifi"></i>
-        <i class="pi pi-volume-up"></i>
+        <i class="pi pi-video px-2"></i>
+        <i class="pi pi-wifi px-2"></i>
+        <i class="pi pi-volume-up px-2"></i>
         <span>Fri 13:07</span>
-        <i class="pi pi-search"></i>
-        <i class="pi pi-bars"></i>
+        <i class="pi pi-search px-2"></i>
+        <i class="pi pi-bars px-2"></i>
     </ng-template>
 </p-menubar>
 <div class="dock-window dock-advanced">
@@ -387,14 +387,27 @@ export class AdvancedDoc implements OnInit, OnDestroy {
         </ng-template>
     </p-dock>
 
-    <p-toast></p-toast>
+    <p-toast position="top-center" key="tc" />
 
-    <p-dialog [(visible)]="displayFinder" [breakpoints]="{ '960px': '50vw' }" [style]="{ width: '30vw', height: '18rem' }" [draggable]="false" [resizable]="false">
-        <p-tree [value]="nodes"></p-tree>
+    <p-dialog 
+        [(visible)]="displayFinder" 
+        [breakpoints]="{ '960px': '50vw' }" 
+        [style]="{ width: '30vw', height: '18rem' }" 
+        [draggable]="false" 
+        [resizable]="false">
+            <p-tree [value]="nodes" />
     </p-dialog>
 
-    <p-dialog [maximizable]="true" [(visible)]="displayTerminal" [breakpoints]="{ '960px': '50vw' }" [style]="{ width: '30vw' }" [draggable]="false" [resizable]="false">
-        <p-terminal welcomeMessage="Welcome to PrimeNG (cmd: 'date', 'greet {0}', 'random')" prompt="primeng $"></p-terminal>
+    <p-dialog 
+        [maximizable]="true" 
+        [(visible)]="displayTerminal" 
+        [breakpoints]="{ '960px': '50vw' }" 
+        [style]="{ width: '30vw' }" 
+        [draggable]="false" 
+        [resizable]="false">
+            <p-terminal 
+                welcomeMessage="Welcome to PrimeNG (cmd: 'date', 'greet {0}', 'random')" 
+                prompt="primeng $" />
     </p-dialog>
 
     <p-galleria
@@ -407,27 +420,25 @@ export class AdvancedDoc implements OnInit, OnDestroy {
         [responsiveOptions]="responsiveOptions"
         [containerStyle]="{ 'max-width': '850px' }"
         [circular]="true"
-        [fullScreen]="true"
-    >
+        [fullScreen]="true">
         <ng-template pTemplate="item" let-item>
-            <img [src]="item.previewImageSrc" style="width: 100%; display: block;" />
+            <img [src]="item.itemImageSrc" style="width: 100%; display: block;" />
         </ng-template>
     </p-galleria>
 </div>`,
 
-        html: `
-<div class="card">
+        html: `<div class="card">
     <p-menubar [model]="menubarItems">
         <ng-template pTemplate="start">
-            <i class="pi pi-apple"></i>
+            <i class="pi pi-apple px-2"></i>
         </ng-template>
         <ng-template pTemplate="end">
-            <i class="pi pi-video"></i>
-            <i class="pi pi-wifi"></i>
-            <i class="pi pi-volume-up"></i>
+            <i class="pi pi-video px-2"></i>
+            <i class="pi pi-wifi px-2"></i>
+            <i class="pi pi-volume-up px-2"></i>
             <span>Fri 13:07</span>
-            <i class="pi pi-search"></i>
-            <i class="pi pi-bars"></i>
+            <i class="pi pi-search px-2"></i>
+            <i class="pi pi-bars px-2"></i>
         </ng-template>
     </p-menubar>
     <div class="dock-window dock-advanced">
@@ -437,14 +448,27 @@ export class AdvancedDoc implements OnInit, OnDestroy {
             </ng-template>
         </p-dock>
 
-        <p-toast></p-toast>
+        <p-toast position="top-center" key="tc" />
 
-        <p-dialog [(visible)]="displayFinder" [breakpoints]="{ '960px': '50vw' }" [style]="{ width: '30vw', height: '18rem' }" [draggable]="false" [resizable]="false">
-            <p-tree [value]="nodes"></p-tree>
+        <p-dialog 
+            [(visible)]="displayFinder" 
+            [breakpoints]="{ '960px': '50vw' }" 
+            [style]="{ width: '30vw', height: '18rem' }" 
+            [draggable]="false" 
+            [resizable]="false">
+                <p-tree [value]="nodes" />
         </p-dialog>
 
-        <p-dialog [maximizable]="true" [(visible)]="displayTerminal" [breakpoints]="{ '960px': '50vw' }" [style]="{ width: '30vw' }" [draggable]="false" [resizable]="false">
-            <p-terminal welcomeMessage="Welcome to PrimeNG (cmd: 'date', 'greet {0}', 'random')" prompt="primeng $"></p-terminal>
+        <p-dialog 
+            [maximizable]="true" 
+            [(visible)]="displayTerminal" 
+            [breakpoints]="{ '960px': '50vw' }" 
+            [style]="{ width: '30vw' }" 
+            [draggable]="false" 
+            [resizable]="false">
+                <p-terminal 
+                    welcomeMessage="Welcome to PrimeNG (cmd: 'date', 'greet {0}', 'random')" 
+                    prompt="primeng $" />
         </p-dialog>
 
         <p-galleria
@@ -460,25 +484,143 @@ export class AdvancedDoc implements OnInit, OnDestroy {
             [fullScreen]="true"
         >
             <ng-template pTemplate="item" let-item>
-                <img [src]="item.previewImageSrc" style="width: 100%; display: block;" />
+                <img [src]="item.itemImageSrc" style="width: 100%; display: block;" />
             </ng-template>
         </p-galleria>
     </div>
 </div>`,
 
-        typescript: `
-import { Component, OnDestroy, OnInit } from '@angular/core';
+        typescript: `import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
+import { TerminalModule } from 'primeng/terminal';
 import { TerminalService } from 'primeng/terminal';
 import { Subscription } from 'rxjs';
-import { NodeService } from '../../service/nodeservice';
-import { PhotoService } from '../../service/photoservice';
+import { NodeService } from '@service/nodeservice';
+import { PhotoService } from '@service/photoservice';
+import { DockModule } from 'primeng/dock';
+import { MenubarModule } from 'primeng/menubar';
+import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { TreeModule } from 'primeng/tree';
+import { GalleriaModule } from 'primeng/galleria';
+        
 
 @Component({
     selector: 'dock-advanced-demo',
     templateUrl: './dock-advanced-demo.html',
-    styleUrls: ['./dock-advanced-demo.scss'],
-    providers: [MessageService, TerminalService]
+    imports: [DockModule, MenubarModule, ToastModule, DialogModule, TreeModule, TerminalModule, GalleriaModule],
+    standalone: true,
+    styles: [
+        \` :host ::ng-deep {
+            .dock-window {
+                width: 100%;
+                height: 450px;
+                position: relative;
+                background-image: url('https://primefaces.org/cdn/primeng/images/dock/window.jpg');
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+        
+            .p-dock {
+                z-index: 1000;
+            }
+        
+            .dock-advanced {
+                .p-dialog-mask,
+                .p-toast {
+                    position: absolute;
+                }
+        
+                .p-dialog {
+                    .p-dialog-header {
+                        padding: .2rem;
+                    }
+        
+                    .p-dialog-content {
+                        padding: 0;
+                    }
+        
+                    p {
+                        margin-top: 0;
+                    }
+        
+                    .p-terminal {
+                        background-color: #212121;
+                        color: #ffffff;
+                        border: 0 none;
+                        min-height: 18rem;
+                        height: 100%;
+        
+                        .p-terminal-command {
+                            color: #80CBC4;
+                        }
+        
+                        .p-terminal-prompt {
+                            color: #FFD54F;
+                        }
+        
+                        .p-terminal-response {
+                            color: #9FA8DA;
+                        }
+                    }
+        
+                    .p-tree {
+                        height: 100%;
+                        border-radius: 0;
+                        border-left-width: 0;
+                        border-right-width: 0;
+                        border-bottom-width: 0;
+                    }
+                }
+        
+                .p-toast {
+                    top: 20px;
+                }
+            }
+        
+            .p-menubar {
+                padding-top: 0;
+                padding-bottom: 0;
+                border-radius: 0;
+        
+                .p-menuitem:first-child {
+                    font-weight: bold;
+                    padding: 0 1rem;
+                }
+        
+                .p-menuitem-link {
+                    padding: 0.5rem .75rem;
+                }
+        
+                .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+                    padding: 0.5rem .75rem;
+        
+                    > .p-submenu-icon {
+                        display: none;
+                    }
+                }
+        
+                .p-menubar-end {
+                    span, i {
+                        padding: 0 .75rem;
+                    }
+                }
+            }
+        }
+        
+        .dark-tooltip {
+            .p-tooltip {
+                .p-tooltip-arrow {
+                    border-top-color: var(--surface-900);
+                }
+        
+                .p-tooltip-text {
+                    background-color: var(--surface-900);
+                }
+            }
+        }\`
+    ],
+    providers: [MessageService, TerminalService, PhotoService, NodeService]
 })
 export class DockAdvancedDemo implements OnInit {
     displayTerminal: boolean | undefined;
@@ -542,7 +684,7 @@ export class DockAdvancedDemo implements OnInit {
                 },
                 icon: 'https://primefaces.org/cdn/primeng/images/dock/appstore.svg',
                 command: () => {
-                    this.messageService.add({ severity: 'error', summary: 'An unexpected error occurred while signing in.', detail: 'UNTRUSTED_CERT_TITLE' });
+                    this.messageService.add({ severity: 'error', summary: 'An unexpected error occurred while signing in.', detail: 'UNTRUSTED_CERT_TITLE', key: 'tc' });
                 }
             },
             {
@@ -556,7 +698,7 @@ export class DockAdvancedDemo implements OnInit {
                 },
                 icon: 'https://primefaces.org/cdn/primeng/images/dock/safari.svg',
                 command: () => {
-                    this.messageService.add({ severity: 'warn', summary: 'Safari has stopped working' });
+                    this.messageService.add({ severity: 'warn', summary: 'Safari has stopped working', key: 'tc' });
                 }
             },
             {
@@ -595,7 +737,7 @@ export class DockAdvancedDemo implements OnInit {
                 },
                 icon: 'https://primefaces.org/cdn/primeng/images/dock/trash.png',
                 command: () => {
-                    this.messageService.add({ severity: 'info', summary: 'Empty Trash' });
+                    this.messageService.add({ severity: 'info', summary: 'Empty Trash', key: 'tc' });
                 }
             }
         ];
