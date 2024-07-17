@@ -25,14 +25,17 @@ import { Code } from '@domain/code';
                     </div>
                 </ng-template>
             </p-confirmDialog>
-            <p-button (click)="confirm()" icon="pi pi-check" label="Confirm" />
+            <p-button (onClick)="confirm()" icon="pi pi-check" label="Confirm" />
         </div>
         <app-code [code]="code" selector="confirm-dialog-headless-demo"></app-code>
     `,
     providers: [ConfirmationService, MessageService]
 })
 export class HeadlessDoc {
-    constructor(private confirmationService: ConfirmationService, private messageService: MessageService) {}
+    constructor(
+        private confirmationService: ConfirmationService,
+        private messageService: MessageService
+    ) {}
 
     confirm() {
         this.confirmationService.confirm({
@@ -76,7 +79,7 @@ export class HeadlessDoc {
         </div>
     </ng-template>
 </p-confirmDialog>
-<p-button (click)="confirm()" icon="pi pi-check" label="Confirm" />`,
+<p-button (onClick)="confirm()" icon="pi pi-check" label="Confirm" />`,
 
         html: `<div class="card flex justify-content-center">
 <p-toast />
@@ -107,7 +110,7 @@ export class HeadlessDoc {
         </div>
     </ng-template>
 </p-confirmDialog>
-<p-button (click)="confirm()" icon="pi pi-check" label="Confirm" />
+<p-button (onClick)="confirm()" icon="pi pi-check" label="Confirm" />
 </div>`,
 
         typescript: `import { Component } from '@angular/core';

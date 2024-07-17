@@ -59,7 +59,7 @@ import { ObjectUtils, UniqueComponentId, ZIndexUtils } from 'primeng/utils';
                 <li
                     *ngIf="isItemVisible(processedItem) && getItemProp(processedItem, 'separator')"
                     [attr.id]="getItemId(processedItem)"
-                    [style]="getItemProp(processedItem, 'style')"
+                    [ngStyle]="getItemProp(processedItem, 'style')"
                     [ngClass]="getSeparatorItemClass(processedItem)"
                     role="separator"
                     [attr.data-pc-section]="'separator'"
@@ -82,10 +82,10 @@ import { ObjectUtils, UniqueComponentId, ZIndexUtils } from 'primeng/utils';
                     [ngStyle]="getItemProp(processedItem, 'style')"
                     [ngClass]="getItemClass(processedItem)"
                     [class]="getItemProp(processedItem, 'styleClass')"
-                    pTooltip
+                    [pTooltip]="getItemProp(processedItem, 'tooltip')"
                     [tooltipOptions]="getItemProp(processedItem, 'tooltipOptions')"
                 >
-                    <div [attr.data-pc-section]="'content'" class="p-menuitem-content" (click)="onItemClick($event, processedItem)" (mouseenter)="onItemMouseEnter({$event, processedItem})">
+                    <div [attr.data-pc-section]="'content'" class="p-menuitem-content" (click)="onItemClick($event, processedItem)" (mouseenter)="onItemMouseEnter({ $event, processedItem })">
                         <ng-container *ngIf="!itemTemplate">
                             <a
                                 *ngIf="!getItemProp(processedItem, 'routerLink')"
@@ -189,7 +189,7 @@ import { ObjectUtils, UniqueComponentId, ZIndexUtils } from 'primeng/utils';
         class: 'p-element'
     }
 })
-export class TieredMenuSub implements AfterContentInit {
+export class TieredMenuSub {
     @Input() items: any[];
 
     @Input() itemTemplate: HTMLElement | undefined;
@@ -230,7 +230,11 @@ export class TieredMenuSub implements AfterContentInit {
 
     @ViewChild('sublist', { static: true }) sublistViewChild: ElementRef;
 
-    constructor(public el: ElementRef, public renderer: Renderer2, @Inject(forwardRef(() => TieredMenu)) public tieredMenu: TieredMenu) {
+    constructor(
+        public el: ElementRef,
+        public renderer: Renderer2,
+        @Inject(forwardRef(() => TieredMenu)) public tieredMenu: TieredMenu
+    ) {
         effect(() => {
             const path = this.activeItemPath();
             if (ObjectUtils.isNotEmpty(path)) {
@@ -239,21 +243,20 @@ export class TieredMenuSub implements AfterContentInit {
         });
     }
 
-    ngAfterContentInit(): void {
-        this.positionSubmenu();
-    }
-
     positionSubmenu() {
         if (isPlatformBrowser(this.tieredMenu.platformId)) {
             const sublist = this.sublistViewChild && this.sublistViewChild.nativeElement;
-            if (sublist && !DomHandler.hasClass(sublist, 'p-submenu-list-flipped')) {
+            if (sublist) {
                 const parentItem = sublist.parentElement.parentElement;
                 const containerOffset = DomHandler.getOffset(parentItem);
                 const viewport = DomHandler.getViewport();
                 const sublistWidth = sublist.offsetParent ? sublist.offsetWidth : DomHandler.getOuterWidth(sublist);
                 const itemOuterWidth = DomHandler.getOuterWidth(parentItem.children[0]);
+                const sublistFlippedClass = 'p-submenu-list-flipped';
                 if (parseInt(containerOffset.left, 10) + itemOuterWidth + sublistWidth > viewport.width - DomHandler.calculateScrollbarWidth()) {
-                    DomHandler.addClass(sublist, 'p-submenu-list-flipped');
+                    DomHandler.addClass(sublist, sublistFlippedClass);
+                } else if (DomHandler.hasClass(sublist, sublistFlippedClass)) {
+                    DomHandler.removeClass(sublist, sublistFlippedClass);
                 }
             }
         }

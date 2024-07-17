@@ -15,20 +15,23 @@ import { ConfirmPopup } from 'primeng/confirmpopup';
                     <div class="border-round p-3">
                         <span>{{ message.message }}</span>
                         <div class="flex align-items-center gap-2 mt-3">
-                            <p-button (click)="accept()" label="Save" size="small" />
-                            <p-button (click)="reject()" label="Cancel" [outlined]="true" size="small" />
+                            <p-button (onClick)="accept()" label="Save" size="small" />
+                            <p-button (onClick)="reject()" label="Cancel" [outlined]="true" size="small" />
                         </div>
                     </div>
                 </ng-template>
             </p-confirmPopup>
-            <p-button (click)="confirm($event)" label="Save" />
+            <p-button (onClick)="confirm($event)" label="Save" />
         </div>
         <app-code [code]="code" selector="confirm-popup-headless-demo"></app-code>
     `,
     providers: [ConfirmationService, MessageService]
 })
 export class HeadlessDoc {
-    constructor(private confirmationService: ConfirmationService, private messageService: MessageService) {}
+    constructor(
+        private confirmationService: ConfirmationService,
+        private messageService: MessageService
+    ) {}
 
     @ViewChild(ConfirmPopup) confirmPopup!: ConfirmPopup;
 
@@ -60,13 +63,13 @@ export class HeadlessDoc {
             <div class="border-round p-3">
                 <span>{{ message.message }}</span>
                 <div class="flex align-items-center gap-2 mt-3">
-                    <p-button (click)="accept()" label="Save" size="small" />
-                    <p-button (click)="reject()" label="Cancel" [outlined]="true" size="small" />
+                    <p-button (onClick)="accept()" label="Save" size="small" />
+                    <p-button (onClick)="reject()" label="Cancel" [outlined]="true" size="small" />
                 </div>
             </div>
         </ng-template>
     </p-confirmPopup>
-<p-button (click)="confirm($event)" label="Save" />`,
+<p-button (onClick)="confirm($event)" label="Save" />`,
 
         html: `<div class="card flex justify-content-center gap-2">
     <p-toast />
@@ -75,13 +78,13 @@ export class HeadlessDoc {
             <div class="border-round p-3">
                 <span>{{ message.message }}</span>
                 <div class="flex align-items-center gap-2 mt-3">
-                    <p-button (click)="accept()" label="Save" size="small" />
-                    <p-button (click)="reject()" label="Cancel" [outlined]="true" size="small" />
+                    <p-button (onClick)="accept()" label="Save" size="small" />
+                    <p-button (onClick)="reject()" label="Cancel" [outlined]="true" size="small" />
                 </div>
             </div>
         </ng-template>
     </p-confirmPopup>
-<p-button (click)="confirm($event)" label="Save" />
+<p-button (onClick)="confirm($event)" label="Save" />
 </div>`,
 
         typescript: `import { Component, ViewChild } from '@angular/core';

@@ -38,7 +38,7 @@ import { MessageService, PrimeNGConfig } from 'primeng/api';
                                 <span class="font-semibold">{{ file.name }}</span>
                                 <div>{{ formatSize(file.size) }}</div>
                                 <p-badge value="Pending" severity="warning" />
-                                <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true" [rounded]="true" severity="danger" />
+                                <p-button icon="pi pi-times" (onClick)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true" [rounded]="true" severity="danger" />
                             </div>
                         </div>
                     </div>
@@ -73,11 +73,14 @@ import { MessageService, PrimeNGConfig } from 'primeng/api';
 export class TemplateDoc {
     files = [];
 
-    totalSize : number = 0;
+    totalSize: number = 0;
 
-    totalSizePercent : number = 0;
+    totalSizePercent: number = 0;
 
-    constructor(private config: PrimeNGConfig, private messageService: MessageService) {}
+    constructor(
+        private config: PrimeNGConfig,
+        private messageService: MessageService
+    ) {}
 
     choose(event, callback) {
         callback();
@@ -151,7 +154,7 @@ export class TemplateDoc {
                     <span class="font-semibold">{{ file.name }}</span>
                     <div>{{ formatSize(file.size) }}</div>
                     <p-badge value="Pending" severity="warning" />
-                    <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true" [rounded]="true" severity="danger" />
+                    <p-button icon="pi pi-times" (onClick)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true" [rounded]="true" severity="danger" />
                 </div>
             </div>
         </div>
@@ -204,7 +207,7 @@ export class TemplateDoc {
                         <span class="font-semibold">{{ file.name }}</span>
                         <div>{{ formatSize(file.size) }}</div>
                         <p-badge value="Pending" severity="warning" />
-                        <p-button icon="pi pi-times" (click)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true" [rounded]="true" severity="danger" />
+                        <p-button icon="pi pi-times" (onClick)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true" [rounded]="true" severity="danger" />
                     </div>
                 </div>
             </div>

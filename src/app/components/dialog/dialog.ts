@@ -51,7 +51,7 @@ const hideAnimation = animation([animate('{{transition}}', style({ transform: '{
         <div
             *ngIf="maskVisible"
             [class]="maskStyleClass"
-            [style]="maskStyle"
+            [ngStyle]="maskStyle"
             [ngClass]="{
                 'p-dialog-mask': true,
                 'p-component-overlay p-component-overlay-enter': this.modal,
@@ -86,7 +86,7 @@ const hideAnimation = animation([animate('{{transition}}', style({ transform: '{
                 </ng-container>
 
                 <ng-template #notHeadless>
-                    <div *ngIf="resizable" class="p-resizable-handle" style="z-index: 90;" (mousedown)="initResize($event)"></div>
+                    <div *ngIf="resizable" class="p-resizable-handle" (mousedown)="initResize($event)"></div>
                     <div #titlebar class="p-dialog-header" (mousedown)="initDrag($event)" *ngIf="showHeader">
                         <span [id]="ariaLabelledBy" class="p-dialog-title" *ngIf="!headerFacet && !headerTemplate">{{ header }}</span>
                         <span [id]="ariaLabelledBy" class="p-dialog-title" *ngIf="headerFacet">
@@ -267,7 +267,7 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
      * Style of the mask.
      * @group Props
      */
-    @Input() maskStyle: string | undefined;
+    @Input() maskStyle: { [klass: string]: any } | null | undefined;
     /**
      * Whether to show the header or not.
      * @group Props
@@ -546,7 +546,15 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
         return this.config.getTranslation(TranslationKeys.ARIA)['maximizeLabel'];
     }
 
-    constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: any, public el: ElementRef, public renderer: Renderer2, public zone: NgZone, private cd: ChangeDetectorRef, public config: PrimeNGConfig) {
+    constructor(
+        @Inject(DOCUMENT) private document: Document,
+        @Inject(PLATFORM_ID) private platformId: any,
+        public el: ElementRef,
+        public renderer: Renderer2,
+        public zone: NgZone,
+        private cd: ChangeDetectorRef,
+        public config: PrimeNGConfig
+    ) {
         this.window = this.document.defaultView as Window;
     }
 
@@ -598,20 +606,47 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
         return this.header !== null ? UniqueComponentId() + '_header' : null;
     }
 
-    focus(focusParentElement = this.contentViewChild.nativeElement) {
+    parseDurationToMilliseconds(durationString: string): number | undefined {
+        const transitionTimeRegex = /([\d\.]+)(ms|s)\b/g;
+        let totalMilliseconds = 0;
+        let match;
+
+        while ((match = transitionTimeRegex.exec(durationString)) !== null) {
+            const value = parseFloat(match[1]);
+            const unit = match[2];
+
+            if (unit === 'ms') {
+                totalMilliseconds += value;
+            } else if (unit === 's') {
+                totalMilliseconds += value * 1000;
+            }
+        }
+
+        if (totalMilliseconds === 0) {
+            return undefined;
+        }
+
+        return totalMilliseconds;
+    }
+
+    focus(focusParentElement = this.contentViewChild?.nativeElement) {
+        const timeoutDuration = this.parseDurationToMilliseconds(this.transitionOptions);
+
         let focusable = DomHandler.getFocusableElement(focusParentElement, '[autofocus]');
+
         if (focusable) {
             this.zone.runOutsideAngular(() => {
-                setTimeout(() => focusable.focus(), 5);
+                setTimeout(() => focusable.focus(), timeoutDuration || 5);
             });
             return;
         }
         const focusableElement = DomHandler.getFocusableElement(focusParentElement);
+
         if (focusableElement) {
             this.zone.runOutsideAngular(() => {
-                setTimeout(() => focusableElement.focus(), 5);
+                setTimeout(() => focusableElement.focus(), timeoutDuration || 5);
             });
-        } else if (this.footerViewChild) {
+        } else if (this.footerViewChild && focusParentElement !== this.footerViewChild.nativeElement) {
             // If the content section is empty try to focus on footer
             this.focus(this.footerViewChild.nativeElement);
         }
@@ -688,6 +723,7 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
             if (!this.styleElement) {
                 this.styleElement = this.renderer.createElement('style');
                 this.styleElement.type = 'text/css';
+                DomHandler.setAttribute(this.styleElement, 'nonce', this.config?.csp()?.nonce);
                 this.renderer.appendChild(this.document.head, this.styleElement);
                 let innerHTML = '';
                 for (let breakpoint in this.breakpoints) {
@@ -943,8 +979,8 @@ export class Dialog implements AfterContentInit, OnInit, OnDestroy {
             case 'visible':
                 this.container = event.element;
                 this.wrapper = this.container?.parentElement;
-                this.appendContainer();
                 this.moveOnTop();
+                this.appendContainer();
                 this.bindGlobalListeners();
                 this.container?.setAttribute(this.id, '');
 

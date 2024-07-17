@@ -164,7 +164,16 @@ export class Tooltip implements AfterViewInit, OnDestroy {
 
     resizeListener: any;
 
-    constructor(@Inject(PLATFORM_ID) private platformId: any, public el: ElementRef, public zone: NgZone, public config: PrimeNGConfig, private renderer: Renderer2, private viewContainer: ViewContainerRef) {}
+    interactionInProgress = false;
+
+    constructor(
+        @Inject(PLATFORM_ID) private platformId: any,
+        public el: ElementRef,
+        public zone: NgZone,
+        public config: PrimeNGConfig,
+        private renderer: Renderer2,
+        private viewContainer: ViewContainerRef
+    ) {}
 
     ngAfterViewInit() {
         if (isPlatformBrowser(this.platformId)) {
@@ -332,24 +341,28 @@ export class Tooltip implements AfterViewInit, OnDestroy {
     }
 
     activate() {
-        this.active = true;
-        this.clearHideTimeout();
+        if (!this.interactionInProgress) {
+            this.active = true;
+            this.clearHideTimeout();
 
-        if (this.getOption('showDelay'))
-            this.showTimeout = setTimeout(() => {
-                this.show();
-            }, this.getOption('showDelay'));
-        else this.show();
+            if (this.getOption('showDelay'))
+                this.showTimeout = setTimeout(() => {
+                    this.show();
+                }, this.getOption('showDelay'));
+            else this.show();
 
-        if (this.getOption('life')) {
-            let duration = this.getOption('showDelay') ? this.getOption('life') + this.getOption('showDelay') : this.getOption('life');
-            this.hideTimeout = setTimeout(() => {
-                this.hide();
-            }, duration);
+            if (this.getOption('life')) {
+                let duration = this.getOption('showDelay') ? this.getOption('life') + this.getOption('showDelay') : this.getOption('life');
+                this.hideTimeout = setTimeout(() => {
+                    this.hide();
+                }, duration);
+            }
         }
+        this.interactionInProgress = true;
     }
 
     deactivate() {
+        this.interactionInProgress = false;
         this.active = false;
         this.clearShowTimeout();
 
@@ -430,9 +443,16 @@ export class Tooltip implements AfterViewInit, OnDestroy {
 
         this.create();
 
-        setTimeout(() => {
-            this.container && this.align();
-        }, 100);
+        const nativeElement = this.el.nativeElement;
+        const pDialogWrapper = nativeElement.closest('p-dialog');
+
+        if (pDialogWrapper) {
+            setTimeout(() => {
+                this.container && this.align();
+            }, 100);
+        } else {
+            this.align();
+        }
 
         DomHandler.fadeIn(this.container, 250);
 
@@ -543,11 +563,17 @@ export class Tooltip implements AfterViewInit, OnDestroy {
 
     alignRight() {
         this.preAlign('right');
-        let hostOffset = this.getHostOffset();
-        let left = hostOffset.left + DomHandler.getOuterWidth(this.el.nativeElement);
-        let top = hostOffset.top + (DomHandler.getOuterHeight(this.el.nativeElement) - DomHandler.getOuterHeight(this.container)) / 2;
+        const el = this.activeElement;
+
+        const hostOffset = this.getHostOffset();
+        const left = hostOffset.left + DomHandler.getOuterWidth(el);
+        const top = hostOffset.top + (DomHandler.getOuterHeight(el) - DomHandler.getOuterHeight(this.container)) / 2;
         this.container.style.left = left + this.getOption('positionLeft') + 'px';
         this.container.style.top = top + this.getOption('positionTop') + 'px';
+    }
+
+    private get activeElement(): HTMLElement {
+        return this.el.nativeElement.nodeName.includes('P-') ? DomHandler.findSingle(this.el.nativeElement, '.p-component') || this.el.nativeElement : this.el.nativeElement;
     }
 
     alignLeft() {

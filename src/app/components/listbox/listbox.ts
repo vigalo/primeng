@@ -117,7 +117,14 @@ export const LISTBOX_VALUE_ACCESSOR: any = {
                     </span>
                 </ng-template>
             </div>
-            <div [ngClass]="'p-listbox-list-wrapper'" [ngStyle]="listStyle" [class]="listStyleClass" [style.max-height]="virtualScroll ? 'auto' : scrollHeight || 'auto'">
+            <div
+                [ngClass]="'p-listbox-list-wrapper'"
+                [ngStyle]="listStyle"
+                [class]="listStyleClass"
+                [ngStyle]="{
+                    'max-height': virtualScroll ? 'auto' : scrollHeight || 'auto'
+                }"
+            >
                 <p-scroller
                     #scroller
                     *ngIf="virtualScroll"
@@ -151,7 +158,7 @@ export const LISTBOX_VALUE_ACCESSOR: any = {
                         [tabindex]="-1"
                         [attr.aria-multiselectable]="true"
                         [ngClass]="scrollerOptions.contentStyleClass"
-                        [style]="scrollerOptions.contentStyle"
+                        [ngStyle]="scrollerOptions.contentStyle"
                         [attr.aria-activedescendant]="focused ? focusedOptionId : undefined"
                         [attr.aria-label]="ariaLabel"
                         [attr.aria-multiselectable]="multiple"
@@ -179,7 +186,7 @@ export const LISTBOX_VALUE_ACCESSOR: any = {
                                     [attr.aria-selected]="isSelected(option)"
                                     [attr.aria-disabled]="isOptionDisabled(option)"
                                     [attr.aria-setsize]="ariaSetSize"
-                                    [ariaPosInset]="getAriaPosInset(getOptionIndex(i, scrollerOptions))"
+                                    [attr.ariaPosInset]="getAriaPosInset(getOptionIndex(i, scrollerOptions))"
                                     (click)="onOptionSelect($event, option, getOptionIndex(i, scrollerOptions))"
                                     (dblclick)="onOptionDoubleClick($event, option)"
                                     (mousedown)="onOptionMouseDown($event, getOptionIndex(i, scrollerOptions))"
@@ -664,10 +671,20 @@ export class Listbox implements AfterContentInit, OnInit, ControlValueAccessor, 
 
     visibleOptions = computed(() => {
         const options = this.group ? this.flatOptions(this._options()) : this._options() || [];
-        return this._filterValue() ? this.filterService.filter(options, this.searchFields, this._filterValue(), this.filterMatchMode, this.filterLocale) : options;
+        const filterValue = this._filterValue();
+
+        if (this.searchFields[0] === undefined) {
+            return filterValue ? options.filter((option) => option.toString().toLocaleLowerCase(this.filterLocale).indexOf(filterValue.toLocaleLowerCase(this.filterLocale).trim()) !== -1) : options;
+        } else return filterValue ? this.filterService.filter(options, this.searchFields, filterValue, this.filterMatchMode, this.filterLocale) : options;
     });
 
-    constructor(public el: ElementRef, public cd: ChangeDetectorRef, public filterService: FilterService, public config: PrimeNGConfig, private renderer: Renderer2) {}
+    constructor(
+        public el: ElementRef,
+        public cd: ChangeDetectorRef,
+        public filterService: FilterService,
+        public config: PrimeNGConfig,
+        private renderer: Renderer2
+    ) {}
 
     ngOnInit() {
         this.id = this.id || UniqueComponentId();
@@ -881,7 +898,6 @@ export class Listbox implements AfterContentInit, OnInit, ControlValueAccessor, 
                       .map((option) => this.getOptionValue(option));
 
             this.updateModel(value, event);
-            this.onChange.emit({ originalEvent: event, value: this.value });
         }
 
         event.preventDefault();

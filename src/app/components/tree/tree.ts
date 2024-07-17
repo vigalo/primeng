@@ -85,7 +85,9 @@ import {
             >
                 <div
                     class="p-treenode-content"
-                    [style.paddingLeft]="level * indentation + 'rem'"
+                    [ngStyle]="{
+                        'padding-left': level * indentation + 'rem'
+                    }"
                     (click)="onNodeClick($event)"
                     (contextmenu)="onNodeRightClick($event)"
                     (touchend)="onNodeTouchEnd()"
@@ -134,7 +136,14 @@ import {
                         </span>
                     </span>
                 </div>
-                <ul class="p-treenode-children" style="display: none;" *ngIf="!tree.virtualScroll && node.children && node.expanded" [style.display]="node.expanded ? 'block' : 'none'" role="tree">
+                <ul
+                    class="p-treenode-children"
+                    [ngStyle]="{
+                        display: node.expanded ? 'block' : 'none'
+                    }"
+                    *ngIf="!tree.virtualScroll && node.children && node.expanded"
+                    role="group"
+                >
                     <p-treeNode
                         *ngFor="let childNode of node.children; let firstChild = first; let lastChild = last; let index = index; trackBy: tree.trackBy"
                         [node]="childNode"
@@ -202,7 +211,13 @@ import {
                                 </span>
                             </div>
                         </td>
-                        <td class="p-treenode-children-container" *ngIf="node.children && node.expanded" [style.display]="node.expanded ? 'table-cell' : 'none'">
+                        <td
+                            class="p-treenode-children-container"
+                            *ngIf="node.children && node.expanded"
+                            [ngStyle]="{
+                                display: node.expanded ? 'table-cell' : 'none'
+                            }"
+                        >
                             <div class="p-treenode-children">
                                 <p-treeNode *ngFor="let childNode of node.children; let firstChild = first; let lastChild = last; trackBy: tree.trackBy" [node]="childNode" [firstChild]="firstChild" [lastChild]="lastChild"></p-treeNode>
                             </div>
@@ -635,10 +650,21 @@ export class UITreeNode implements OnInit {
         event.preventDefault();
     }
 
+    isActionableElement(event) {
+        const target = event.target;
+
+        const isActionable = target instanceof HTMLElement && (target.nodeName == 'A' || target.nodeName == 'BUTTON');
+
+        return isActionable;
+    }
+
     onEnter(event: KeyboardEvent) {
         this.tree.onNodeClick(event, <TreeNode>this.node);
         this.setTabIndexForSelectionMode(event, this.tree.nodeTouched);
-        event.preventDefault();
+
+        if (!this.isActionableElement(event)) {
+            event.preventDefault();
+        }
     }
 
     setAllNodesTabIndexes() {
@@ -796,7 +822,7 @@ export class UITreeNode implements OnInit {
                     </ng-container>
                 </p-scroller>
                 <ng-container *ngIf="!virtualScroll">
-                    <div #wrapper class="p-tree-wrapper" [style.max-height]="scrollHeight">
+                    <div #wrapper class="p-tree-wrapper" [ngStyle]="{ 'max-height': scrollHeight }">
                         <ul class="p-tree-container" *ngIf="getRootNode()" role="tree" [attr.aria-label]="ariaLabel" [attr.aria-labelledby]="ariaLabelledBy">
                             <p-treeNode
                                 *ngFor="let node of getRootNode(); let firstChild = first; let lastChild = last; let index = index; trackBy: trackBy"
@@ -1155,7 +1181,12 @@ export class Tree implements OnInit, AfterContentInit, OnChanges, OnDestroy, Blo
 
     public dragStopSubscription: Subscription | undefined | null;
 
-    constructor(public el: ElementRef, @Optional() public dragDropService: TreeDragDropService, public config: PrimeNGConfig, private cd: ChangeDetectorRef) {}
+    constructor(
+        public el: ElementRef,
+        @Optional() public dragDropService: TreeDragDropService,
+        public config: PrimeNGConfig,
+        private cd: ChangeDetectorRef
+    ) {}
 
     ngOnInit() {
         if (this.droppableNodes) {
@@ -1271,7 +1302,10 @@ export class Tree implements OnInit, AfterContentInit, OnChanges, OnDestroy, Blo
             return;
         } else if (this.selectionMode) {
             if (node.selectable === false) {
+                node.style = '--p-focus-ring-color: none;';
                 return;
+            } else {
+                node.style = '--p-focus-ring-color: var(--primary-color)';
             }
 
             if (this.hasFilteredNodes()) {
@@ -1339,7 +1373,9 @@ export class Tree implements OnInit, AfterContentInit, OnChanges, OnDestroy, Blo
                             this.onNodeUnselect.emit({ originalEvent: event, node: node });
                         } else {
                             this.selection = node;
-                            this.onNodeSelect.emit({ originalEvent: event, node: node });
+                            setTimeout(() => {
+                                this.onNodeSelect.emit({ originalEvent: event, node: node });
+                            });
                         }
                     } else {
                         if (selected) {
@@ -1347,7 +1383,9 @@ export class Tree implements OnInit, AfterContentInit, OnChanges, OnDestroy, Blo
                             this.onNodeUnselect.emit({ originalEvent: event, node: node });
                         } else {
                             this.selection = [...(this.selection || []), node];
-                            this.onNodeSelect.emit({ originalEvent: event, node: node });
+                            setTimeout(() => {
+                                this.onNodeSelect.emit({ originalEvent: event, node: node });
+                            });
                         }
                     }
 
@@ -1366,8 +1404,9 @@ export class Tree implements OnInit, AfterContentInit, OnChanges, OnDestroy, Blo
     onNodeRightClick(event: MouseEvent, node: TreeNode<any>) {
         if (this.contextMenu) {
             let eventTarget = <Element>event.target;
+            let className = eventTarget.getAttribute('class');
 
-            if (eventTarget.className && eventTarget.className.indexOf('p-tree-toggler') === 0) {
+            if (className && className.includes('p-tree-toggler')) {
                 return;
             } else {
                 let index = this.findIndexInSelection(node);

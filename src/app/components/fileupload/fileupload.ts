@@ -124,7 +124,7 @@ import { FileBeforeUploadEvent, FileProgressEvent, FileRemoveEvent, FileSelectEv
                 <div class="p-fileupload-files" *ngIf="hasFiles()">
                     <div *ngIf="!fileTemplate">
                         <div class="p-fileupload-row" *ngFor="let file of files; let i = index">
-                            <div><img [src]="file.objectURL" *ngIf="isImage(file)" [width]="previewWidth" (error)="imageError($event)" /></div>
+                            <div *ngIf="isImage(file)"><img [src]="file.objectURL" [width]="previewWidth" (error)="imageError($event)" /></div>
                             <div class="p-fileupload-filename">{{ file.name }}</div>
                             <div>{{ formatSize(file.size) }}</div>
                             <div>
@@ -140,7 +140,19 @@ import { FileBeforeUploadEvent, FileProgressEvent, FileRemoveEvent, FileSelectEv
                     </div>
                 </div>
                 <ng-container
-                    *ngTemplateOutlet="contentTemplate; context: { $implicit: files, uploadedFiles: uploadedFiles, removeUploadedFileCallback: removeUploadedFile.bind(this), removeFileCallback: remove.bind(this), progress: progress, messages: msgs }"
+                    *ngTemplateOutlet="
+                        contentTemplate;
+                        context: {
+                            $implicit: files,
+                            uploadedFiles: uploadedFiles,
+                            chooseCallback: choose.bind(this),
+                            clearCallback: clear.bind(this),
+                            removeUploadedFileCallback: removeUploadedFile.bind(this),
+                            removeFileCallback: remove.bind(this),
+                            progress: progress,
+                            messages: msgs
+                        }
+                    "
                 ></ng-container>
                 <div *ngIf="emptyTemplate && !hasFiles() && !hasUploadedFiles()" class="p-fileupload-empty">
                     <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>

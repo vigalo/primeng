@@ -76,7 +76,7 @@ export const AUTOCOMPLETE_VALUE_ACCESSOR: any = {
                 role="combobox"
                 [attr.placeholder]="placeholder"
                 [attr.size]="size"
-                [maxlength]="maxlength"
+                [attr.maxlength]="maxlength"
                 [tabindex]="!disabled ? tabindex : -1"
                 [readonly]="readonly"
                 [disabled]="disabled"
@@ -125,7 +125,7 @@ export const AUTOCOMPLETE_VALUE_ACCESSOR: any = {
                     [attr.aria-selected]="true"
                 >
                     <ng-container *ngTemplateOutlet="selectedItemTemplate; context: { $implicit: option }"></ng-container>
-                    <span *ngIf="!selectedItemTemplate" class="p-autocomplete-token-label">{{ getOptionLabel(option) }}</span>
+                    <span *ngIf="!selectedItemTemplate" class="p-autocomplete-token-label">{{ getMultipleLabel(option) }}</span>
                     <span class="p-autocomplete-token-icon" (click)="!readonly ? removeOption($event, i) : ''">
                         <TimesCircleIcon [styleClass]="'p-autocomplete-token-icon'" *ngIf="!removeIconTemplate" [attr.aria-hidden]="true" />
                         <span *ngIf="removeIconTemplate" class="p-autocomplete-token-icon" [attr.aria-hidden]="true">
@@ -150,7 +150,7 @@ export const AUTOCOMPLETE_VALUE_ACCESSOR: any = {
                         [attr.placeholder]="!filled ? placeholder : null"
                         [attr.size]="size"
                         aria-autocomplete="list"
-                        [maxlength]="maxlength"
+                        [attr.maxlength]="maxlength"
                         [tabindex]="!disabled ? tabindex : -1"
                         [readonly]="readonly"
                         [disabled]="disabled"
@@ -194,7 +194,7 @@ export const AUTOCOMPLETE_VALUE_ACCESSOR: any = {
                 (onAnimationStart)="onOverlayAnimationStart($event)"
                 (onHide)="hide()"
             >
-                <div [ngClass]="panelClass" [style.max-height]="virtualScroll ? 'auto' : scrollHeight" [ngStyle]="panelStyle" [class]="panelStyleClass">
+                <div [ngClass]="panelClass" [ngStyle]="panelStyles" [class]="panelStyleClass">
                     <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
                     <p-scroller
                         *ngIf="virtualScroll"
@@ -778,10 +778,10 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
 
     inputValue = computed(() => {
         const modelValue = this.modelValue();
-        const selectedOption = this.optionValueSelected ? (this.suggestions || []).find((item: any) => ObjectUtils.resolveFieldData(item, this.optionValue) === modelValue) : modelValue;
+        const selectedOption = this.getSelectedOption(modelValue);
 
         if (modelValue) {
-            if (typeof modelValue === 'object' || this.optionValueSelected) {
+            if (typeof modelValue === 'object' || this.optionValue) {
                 const label = this.getOptionLabel(selectedOption);
 
                 return label != null ? label : modelValue;
@@ -822,6 +822,13 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
             'p-autocomplete-panel p-component': true,
             'p-input-filled': this.config.inputStyle() === 'filled',
             'p-ripple-disabled': this.config.ripple === false
+        };
+    }
+
+    get panelStyles() {
+        return {
+            'max-height': this.virtualScroll ? 'auto' : this.scrollHeight,
+            ...this.panelStyle
         };
     }
 
@@ -873,7 +880,15 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
         return typeof this.modelValue() === 'string' && this.optionValue;
     }
 
-    constructor(@Inject(DOCUMENT) private document: Document, public el: ElementRef, public renderer: Renderer2, public cd: ChangeDetectorRef, public config: PrimeNGConfig, public overlayService: OverlayService, private zone: NgZone) {
+    constructor(
+        @Inject(DOCUMENT) private document: Document,
+        public el: ElementRef,
+        public renderer: Renderer2,
+        public cd: ChangeDetectorRef,
+        public config: PrimeNGConfig,
+        public overlayService: OverlayService,
+        private zone: NgZone
+    ) {
         effect(() => {
             this.filled = ObjectUtils.isNotEmpty(this.modelValue());
         });
@@ -954,7 +969,7 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
 
     handleSuggestionsChange() {
         if (this.loading) {
-            this._suggestions() ? this.show() : !!this.emptyTemplate ? this.show() : this.hide();
+            this._suggestions().length > 0 || this.showEmptyMessage ? this.show() : !!this.emptyTemplate ? this.show() : this.hide();
             const focusedOptionIndex = this.overlayVisible && this.autoOptionFocus ? this.findFirstFocusedOptionIndex() : -1;
             this.focusedOptionIndex.set(focusedOptionIndex);
             this.suggestionsUpdated = true;
@@ -1584,7 +1599,7 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
     }
 
     getOptionValue(option) {
-        return this.optionValue ? ObjectUtils.resolveFieldData(option, this.optionValue) : option && option.value != undefined ? option.value : option;
+        return this.optionValue ? ObjectUtils.resolveFieldData(option, this.optionValue) : option;
     }
 
     getOptionIndex(index, scrollerOptions) {
@@ -1597,6 +1612,20 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
 
     getOptionGroupChildren(optionGroup: any) {
         return this.optionGroupChildren ? ObjectUtils.resolveFieldData(optionGroup, this.optionGroupChildren) : optionGroup.items;
+    }
+
+    getSelectedOption(modelValue: any) {
+        if (!this.optionValue) {
+            return modelValue;
+        }
+
+        return (this.suggestions || []).find((item: any) => ObjectUtils.resolveFieldData(item, this.optionValue) === modelValue);
+    }
+
+    getMultipleLabel(option: any) {
+        let selected = this.getSelectedOption(option);
+
+        return this.getOptionLabel(selected);
     }
 
     registerOnChange(fn: Function): void {
