@@ -41,10 +41,7 @@ import { UniqueComponentId, ZIndexUtils } from 'primeng/utils';
     name: 'safeHtml'
 })
 export class SafeHtmlPipe implements PipeTransform {
-    constructor(
-        @Inject(PLATFORM_ID) private readonly platformId: any,
-        private readonly sanitizer: DomSanitizer
-    ) {}
+    constructor(@Inject(PLATFORM_ID) private readonly platformId: any, private readonly sanitizer: DomSanitizer) {}
 
     public transform(value: string): SafeHtml {
         if (!value || !isPlatformBrowser(this.platformId)) {
@@ -409,12 +406,16 @@ export class Menu implements OnDestroy {
      * @group Method
      */
     public show(event: any) {
+        if (this.visible && this.target !== event.currentTarget) {
+            this.hide();
+        }
+
         this.target = event.currentTarget;
         this.relativeAlign = event.relativeAlign;
         this.visible = true;
         this.preventDocumentDefault = true;
         this.overlayVisible = true;
-        this.cd.markForCheck();
+        this.cd.detectChanges();
     }
 
     ngOnInit() {
@@ -466,6 +467,7 @@ export class Menu implements OnDestroy {
                     this.bindDocumentResizeListener();
                     this.bindScrollListener();
                     DomHandler.focus(this.listViewChild.nativeElement);
+                    this.preventDocumentDefault = true;
                 }
                 break;
 
@@ -516,7 +518,7 @@ export class Menu implements OnDestroy {
     public hide() {
         this.visible = false;
         this.relativeAlign = false;
-        this.cd.markForCheck();
+        this.cd.detectChanges();
     }
 
     onWindowResize() {
@@ -778,10 +780,6 @@ export class Menu implements OnDestroy {
         this.unbindDocumentResizeListener();
         this.unbindScrollListener();
         this.preventDocumentDefault = false;
-
-        if (!(this.cd as ViewRef).destroyed) {
-            this.target = null;
-        }
     }
 
     ngOnDestroy() {

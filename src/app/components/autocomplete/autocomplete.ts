@@ -880,15 +880,7 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
         return typeof this.modelValue() === 'string' && this.optionValue;
     }
 
-    constructor(
-        @Inject(DOCUMENT) private document: Document,
-        public el: ElementRef,
-        public renderer: Renderer2,
-        public cd: ChangeDetectorRef,
-        public config: PrimeNGConfig,
-        public overlayService: OverlayService,
-        private zone: NgZone
-    ) {
+    constructor(@Inject(DOCUMENT) private document: Document, public el: ElementRef, public renderer: Renderer2, public cd: ChangeDetectorRef, public config: PrimeNGConfig, public overlayService: OverlayService, private zone: NgZone) {
         effect(() => {
             this.filled = ObjectUtils.isNotEmpty(this.modelValue());
         });
@@ -1560,6 +1552,11 @@ export class AutoComplete implements AfterViewChecked, AfterContentInit, OnDestr
             this.onHide.emit();
             this.cd.markForCheck();
         };
+
+        // Added to adjust the scroller's content position when the dropdown closes.
+        if (this.virtualScroll) {
+            this.scroller.onScrollChange(event);
+        }
 
         setTimeout(() => {
             _hide();
