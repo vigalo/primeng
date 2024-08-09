@@ -1,4 +1,38 @@
 # Changelog
+## [17.18.8](https://github.com/primefaces/primeng/tree/17.18.8) (2024-08-08)
+[Full Changelog](https://github.com/primefaces/primeng/compare/17.18.7...17.18.8)
+
+**Fixed bugs:**
+- Menubar: Clicking menuitems outputs error in console [\#16201](https://github.com/primefaces/primeng/issues/16201)
+- Component: Table may have Trusted Types incompatibilities from .innerHTML assignment [\#16153](https://github.com/primefaces/primeng/issues/16153)
+- P-autocomplete after second click doesn't show dropdown [\#15281](https://github.com/primefaces/primeng/issues/15281)
+- AutoComplete: Cannot intercept enter key [\#16160](https://github.com/primefaces/primeng/issues/16160)
+- Table: when scrollHeight is set to 'flex', on the first load, the table height is not fitting parent [\#16165](https://github.com/primefaces/primeng/issues/16165)
+- Calendar: panelStyle width and min width overridden when appendTo is used [\#16176](https://github.com/primefaces/primeng/issues/16176)
+- ColumnFilter: Template names are wrong [\#16180](https://github.com/primefaces/primeng/issues/16180)
+- ListBox component accessibility issues [\#16152](https://github.com/primefaces/primeng/issues/16152)
+- Tree: Accessibility issues [\#16156](https://github.com/primefaces/primeng/issues/16156)
+- Component: colorPicker - inline=true property doesn't set the appropriate color [\#16169](https://github.com/primefaces/primeng/issues/16169)
+- Accessibility: Tree not selectable via Keyboard after second dialog opening [\#16191](https://github.com/primefaces/primeng/issues/16191)
+- ColorPicker: click on label does not open the color picker in docs [\#16193](https://github.com/primefaces/primeng/issues/16193)
+
+## [17.18.7](https://github.com/primefaces/primeng/tree/17.18.7) (2024-08-01)
+[Full Changelog](https://github.com/primefaces/primeng/compare/17.18.6...17.18.7)
+
+**Fixed bugs:**
+- tabmenu: emits change event twice when an item is clicked [\#16123](https://github.com/primefaces/primeng/issues/16123)
+- Table: Frozen columns are displaced [\#15852](https://github.com/primefaces/primeng/issues/15852)
+- Password: Tooltip with tooltipEvent='focus' is never displayed [\#16106](https://github.com/primefaces/primeng/issues/16106)
+- p-datepicker-current-day is not applied to the selected day [\#15969](https://github.com/primefaces/primeng/issues/15969)
+- TabView: Demo code for TabViewDynamic is wrong [\#16148](https://github.com/primefaces/primeng/issues/16148)
+- Component: TabView [\#16076](https://github.com/primefaces/primeng/issues/16076)
+- Dialog: Material Design close button regression [\#14916](https://github.com/primefaces/primeng/issues/14916)
+- Breadcrumb | Disabled breadcrumbs should have 'aria-disabled' [\#16125](https://github.com/primefaces/primeng/issues/16125)
+- Table> double call to (onLazyLoad) event [\#16070](https://github.com/primefaces/primeng/issues/16070)
+- pBadge | Add missing badgeStyle & badgeStyleClass to directive [\#16133](https://github.com/primefaces/primeng/issues/16133)
+- Breadcrumb | 'tabindex' property not working [\#16139](https://github.com/primefaces/primeng/issues/16139)
+- Menubar: autoDisplay and autoHide broken [\#13512](https://github.com/primefaces/primeng/issues/13512)
+
 ## [17.18.6](https://github.com/primefaces/primeng/tree/17.18.6) (2024-07-25)
 [Full Changelog](https://github.com/primefaces/primeng/compare/17.18.5...17.18.6)
 
@@ -797,6 +831,16 @@
 - TypeError: this.focusedItemInfo.mutate is not a function [\#14119](https://github.com/primefaces/primeng/issues/14119)
 - Upgrade to Angular 17? [\#14063](https://github.com/primefaces/primeng/issues/14063)
 
+## ![LTS](https://www.primefaces.org/wp-content/uploads/2020/01/lts-icon-24.png "PrimeNG LTS") [16.9.14-LTS](https://www.npmjs.com/package/primeng/v/16.9.14-lts) (2024-08-01)
+
+**Fixed bugs:**
+- Password: Tooltip with tooltipEvent='focus' is never displayed [\#16106](https://github.com/primefaces/primeng/issues/16106)
+- Breadcrumb | Disabled breadcrumbs should have 'aria-disabled' [\#16125](https://github.com/primefaces/primeng/issues/16125)
+- Table> double call to (onLazyLoad) event [\#16070](https://github.com/primefaces/primeng/issues/16070)
+- pBadge | Add missing badgeStyle & badgeStyleClass to directive [\#16133](https://github.com/primefaces/primeng/issues/16133)
+- Breadcrumb | 'tabindex' property not working [\#16139](https://github.com/primefaces/primeng/issues/16139)
+- Menubar: autoDisplay and autoHide broken [\#13512](https://github.com/primefaces/primeng/issues/13512)
+
 ## ![LTS](https://www.primefaces.org/wp-content/uploads/2020/01/lts-icon-24.png "PrimeNG LTS") [16.9.13-LTS](https://www.npmjs.com/package/primeng/v/16.9.13-lts) (2024-07-18)
 
 **Fixed bugs:**
@@ -1458,6 +1502,13 @@
 - Touch Control - Thumbnails selects photo randomly when tapping. [\#12943](https://github.com/primefaces/primeng/issues/12943)
 - Checkbox in p-treeNode always checked when using custom icon [\#12951](https://github.com/primefaces/primeng/issues/12951)
 - ConfirmDialog: Duplicated AcceptIcons [\#13001](https://github.com/primefaces/primeng/issues/13001)
+
+## ![LTS](https://www.primefaces.org/wp-content/uploads/2020/01/lts-icon-24.png "PrimeNG LTS") [15.4.25-LTS](https://www.npmjs.com/package/primeng/v/15.4.25-lts) (2024-08-01)
+
+**Fixed bugs:**
+- Password: Tooltip with tooltipEvent='focus' is never displayed [\#16106](https://github.com/primefaces/primeng/issues/16106)
+- Table> double call to (onLazyLoad) event [\#16070](https://github.com/primefaces/primeng/issues/16070)
+- pBadge | Add missing badgeStyle & badgeStyleClass to directive [\#16133](https://github.com/primefaces/primeng/issues/16133)
 
 ## ![LTS](https://www.primefaces.org/wp-content/uploads/2020/01/lts-icon-24.png "PrimeNG LTS") [15.4.24-LTS](https://www.npmjs.com/package/primeng/v/15.4.24-lts) (2024-07-24)
 
